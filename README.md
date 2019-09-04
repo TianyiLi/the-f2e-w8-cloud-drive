@@ -1,5 +1,14 @@
 # the-f2e-w8-cloud-drive
 
+## Week 8 雲端硬碟
+
+[設計稿](https://challenge.thef2e.com/user/1930?schedule=4169#works-4169)
+
+
+就某種方面來說，typescript好用，至少可以將自己一些interface拆分出來做，最後import同樣的spec也不用怕跑掉
+
+不過支援程度還是不足，希望之後composition api好一點吧...
+
 ## Project setup
 ```
 yarn install
