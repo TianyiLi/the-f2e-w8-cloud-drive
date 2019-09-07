@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import HelloWorld from '@/components/HelloWorld.vue' // @ is an alias to /src
 import { IDataType } from './Home'
 const Mp4Icon = require('../assets/icon-mp4.png')
@@ -12,6 +12,8 @@ const FolderIcon = require('../assets/icon-folder.png')
   }
 })
 export default class Home extends Vue {
+  @Prop({ default () { return '' } }) type!: string
+
   private mockData: IDataType[] = [
     {
       type: 'mp4',
@@ -19,7 +21,7 @@ export default class Home extends Vue {
       star: true,
       lastModified: '2019/6/10',
       size: '6.5MB',
-      owner: 'Jennifer',
+      owner: 'Paul',
       fileId: 0
     },
     {
@@ -28,7 +30,7 @@ export default class Home extends Vue {
       star: false,
       lastModified: '2019/6/25',
       size: '2.3MB',
-      owner: 'Jennifer',
+      owner: 'Paul',
       fileId: 1
     },
     {
@@ -37,10 +39,22 @@ export default class Home extends Vue {
       star: false,
       lastModified: '2019/8/30',
       size: '205MB',
-      owner: 'Jennifer',
+      owner: 'Paul',
       fileId: 2
     }
   ]
+
+  selectListIsShow = false
+  selectListStyle = {}
+  activeRow = -1
+
+  mounted () {
+    window.onclick = this.clearSelectList
+  }
+
+  destroyed () {
+    window.onclick = null
+  }
 
   getPrefixImg (type: string) {
     switch (type) {
@@ -58,20 +72,51 @@ export default class Home extends Vue {
         break
     }
   }
+
+  setSelectList ($ev: any, target: number) {
+    console.log($ev)
+    let x = $ev.pageX
+    let y = $ev.pageY
+    if (x + 200 > window.innerWidth) {
+      x = window.innerWidth - 210
+    }
+    if (y + 380 > window.innerHeight) {
+      y = window.innerHeight - 390
+    }
+    this.selectListStyle = {
+      display: 'flex',
+      top: y + 27 + 'px',
+      left: x + 'px'
+    }
+    this.activeRow = target
+  }
+  clearSelectList () {
+    this.selectListStyle = {
+      display: 'none'
+    }
+    this.activeRow = -1
+  }
 }
 </script>
 <template>
   <div class="home">
     <div class="input-field">
-      <div class="search">
+      <div class="search"
+        tabindex="1">
         <img src="../assets/search_24px.svg"
           alt="">
+      </div>
+      <div class="select-list search-select">
+        <div class="option">依上傳時間</div>
+        <div class="option">依修改時間</div>
+        <div class="option">依檔案大小</div>
+        <div class="option">依擁有者</div>
       </div>
       <input type="text"
         placeholder="搜尋您的檔案">
       <span class="triangle"></span>
     </div>
-    <div class="my-file-wrap">
+    <div class="my-file-wrap" v-if="type !== 'shared'">
       <div class="head">
         <h3>我的檔案</h3>
         <button class="btn-outline more">看更多</button>
@@ -86,14 +131,18 @@ export default class Home extends Vue {
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="(row) in mockData"
+        <tbody @click.stop>
+          <tr v-for="(row, i) in mockData"
+            @contextmenu.prevent="setSelectList($event, i)"
+            @click.stop="clearSelectList"
+            v-show="type === 'favorite' ? row.star : true"
+            :class="activeRow === i ? 'active' : ''"
             :key="row.id">
             <td class="name">
               <img :src="getPrefixImg(row.type)">
               {{row.name}}
               <img class="star"
-                src="../assets/star.svg"
+                src="../assets/star-fill.svg"
                 v-if="row.star"
                 alt="">
             </td>
@@ -107,23 +156,83 @@ export default class Home extends Vue {
               {{row.owner}}
             </td>
             <td class="more">
-              <button>
+              <button @click.stop="setSelectList($event, i)">
                 <img src="../assets/more-info.svg"
                   alt="">
               </button>
-              <div class="select-list">
-                <div class="option">共享</div>
-                <div class="option">下載</div>
-                <div class="option">標示星號</div>
-                <div class="option">重新命名</div>
-                <div class="option">移動</div>
-                <div class="option">複製</div>
-                <div class="option">刪除</div>
-              </div>
             </td>
           </tr>
         </tbody>
       </table>
+      <div class="select-list"
+        :style="selectListStyle">
+        <div class="option">共享</div>
+        <div class="option">下載</div>
+        <div class="option">標示星號</div>
+        <div class="option">重新命名</div>
+        <div class="option">移動</div>
+        <div class="option">複製</div>
+        <div class="option">刪除</div>
+      </div>
+    </div>
+    <div class="my-file-wrap" v-if="type !== 'my-file'">
+      <div class="head">
+        <h3>檔案共享</h3>
+        <button class="btn-outline more">看更多</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>名稱<span class="triangle"></span></th>
+            <th>上次修改</th>
+            <th>檔案大小</th>
+            <th>擁有者</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody @click.stop>
+          <tr v-for="(row, i) in mockData"
+            @contextmenu.prevent="setSelectList($event, i)"
+            @click.stop="clearSelectList"
+            v-show="type === 'favorite' ? row.star : true"
+            :class="activeRow === i ? 'active' : ''"
+            :key="row.id">
+            <td class="name">
+              <img :src="getPrefixImg(row.type)">
+              {{row.name}}
+              <img class="star"
+                src="../assets/star-fill.svg"
+                v-if="row.star"
+                alt="">
+            </td>
+            <td class="last-modified">
+              {{row.lastModified}}
+            </td>
+            <td class="size">
+              {{row.size}}
+            </td>
+            <td class="owner">
+              {{row.owner}}
+            </td>
+            <td class="more">
+              <button @click.stop="setSelectList($event, i)">
+                <img src="../assets/more-info.svg"
+                  alt="">
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="select-list"
+        :style="selectListStyle">
+        <div class="option">共享</div>
+        <div class="option">下載</div>
+        <div class="option">標示星號</div>
+        <div class="option">重新命名</div>
+        <div class="option">移動</div>
+        <div class="option">複製</div>
+        <div class="option">刪除</div>
+      </div>
     </div>
   </div>
 </template>
@@ -156,9 +265,18 @@ export default class Home extends Vue {
       display flex
       justify-content center
       align-items center
+      cursor pointer
+      &:focus
+        outline none
       img
         width 28px
         height 28px
+    .search:focus ~ .search-select
+      display flex
+      width 100%
+      position absolute
+      top calc(100% + 10px)
+      left 0
     .triangle
       position absolute
       top 50%
@@ -189,17 +307,40 @@ export default class Home extends Vue {
     height 40px
     font-size 18px
     color #999999
-    transition .3s
+    transition 0.3s
     &:hover
       color white
       background-color #999999
     &.more
       margin-left auto
+  .select-list
+    position absolute
+    display none
+    width 200px
+    height 350px
+    flex-direction column
+    justify-content space-evenly
+    align-items flex-start
+    border-radius 8px
+    font-size 18px
+    color #666666
+    box-shadow 0px 3px 6px #E6E6E6
+    z-index 1
+    background-color #fff
+    right 0
+    .option
+      padding 9px 0
+      padding-left 26px
+      width 100%
+      box-sizing border-box
+      &:hover
+        background-color #EFEFEF
   table
     width 100%
     border-spacing 0
     text-align left
     border-collapse collapse
+    user-select none
     td, th
       padding 14px 40px 14px 16px
     th
@@ -216,6 +357,8 @@ export default class Home extends Vue {
     .star
       width 19px
     .name
+      img
+        vertical-align middle
       img:first-child
         margin-right 29px
     .more
@@ -230,30 +373,8 @@ export default class Home extends Vue {
           border #4CB5F5 solid 2px
         img
           width 18px
-      button:focus ~ .select-list
-        display flex
-      .select-list
-        position absolute
-        display none
-        width 200px
-        height 350px
-        flex-direction column
-        justify-content space-evenly
-        align-items flex-start
-        border-radius 8px
-        font-size 18px
-        color #666666
-        box-shadow 0px 3px 6px #E6E6E6
-        z-index 1
-        background-color #fff
-        right 0
-        .option
-          padding 9px 0
-          padding-left 26px
-          width 100%
-          box-sizing border-box
-          &:hover
-            background-color #EFEFEF
+    tr.active
+      background-color #D1EEFF
     tr:hover td
       background-color #D1EEFF
       &:first-child

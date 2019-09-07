@@ -8,30 +8,57 @@ import UploadImg from './svg/upload.vue'
   }
 })
 export default class Nav extends Vue {
-
+  navOnClick (to:string) {
+    this.$router.push(to)
+  }
 }
 </script>
 <template>
   <div class="navbar">
     <div class="logo">
-      <img src="../assets/logo@2x.png" alt="" class="logo-img">
+      <img src="../assets/logo@2x.png"
+        alt=""
+        class="logo-img">
     </div>
-    <div class="upload">
+    <button class="upload">
       <UploadImg class="upload-img"></UploadImg>
       <span>上傳檔案</span>
-    </div>
+      <div class="select-list">
+        <div class="option">
+          <div class="img">
+            <img src="../assets/upload-file@2x.png" alt="">
+          </div>
+          上傳檔案
+          <input type="file" name="" id="uplaod-file" style="display: none">
+        </div>
+        <div class="option">
+          <div class="img">
+            <img src="../assets/upload-folder.svg" alt="">
+          </div>
+          <input type="file" name="" id="uplaod-folder" style="display: none">
+          上傳資料夾
+        </div>
+        <div class="option">
+          <div class="img">
+            <img src="../assets/add-folder 拷貝@2x.png" alt="">
+          </div>
+          <input type="file" name="" id="add-folder" style="display: none">
+          新資料夾
+        </div>
+      </div>
+    </button>
     <div class="function-list">
-      <div class="my-file">
+      <div class="my-file" @click="navOnClick('/my-file')">
         <img src="../assets/add-folder 拷貝.svg"
           alt="">
         我的檔案
       </div>
-      <div class="added-star">
+      <div class="added-star"  @click="navOnClick('/favorite')">
         <img src="../assets/star.svg"
           alt="">
         已加星號
       </div>
-      <div class="shared-file">
+      <div class="shared-file" @click="navOnClick('/shared')">
         <img src="../assets/sharing-content.svg"
           alt="">
         檔案共享
@@ -83,18 +110,65 @@ export default class Nav extends Vue {
     font-size 18px
     padding 12px 40px
     border-radius 25px
+    border unset
     display inline-block
     box-sizing border-box
     width 190px
     height 51px
     margin-top 42px
     cursor pointer
+    position relative
+    .select-list
+      position absolute
+      z-index 1
+      top calc(100% + 12px)
+      left 0
+      box-sizing border-box
+      padding 28px 0 58px 0
+      background-color #fff
+      box-shadow 0 3px 6px #4cb5f5
+      border 1px solid #e6e6e6
+      width 200px
+      height 200px
+      color #666666
+      display none
+      flex-direction column
+      justify-content space-between
+      align-items flex-start
+      border-radius 8px
+      font-size 18px
+      font-family '微軟正黑體', serif
+      cursor auto
+      .option
+        cursor pointer
+        font-weight bold
+        padding 5px 0 5px 27px
+        width 100%
+        box-sizing border-box
+        text-align left
+        &:hover
+          background-color #e6e6e6
+        img
+          vertical-align middle
+        .img
+          width 27px
+          display inline-block
+          margin-right 15px
     .upload-img
       fill #4CB5F5
       vertical-align middle
       width 28px
       height 26px
       margin-right 9px
+    &:focus
+      outline none
+      color white
+      background-color #4cb5f5
+      box-shadow 0px 0px 15px #000029
+      .select-list
+        display flex
+      .upload-img
+        fill white
   .function-list
     color white
     font-size 18px
