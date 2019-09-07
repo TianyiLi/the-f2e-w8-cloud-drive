@@ -195,7 +195,7 @@ export default class Home extends Vue {
             @contextmenu.prevent="setSelectList($event, i)"
             @click.stop="clearSelectList"
             v-show="type === 'favorite' ? row.star : true"
-            :class="activeRow === i ? 'active' : ''"
+            :class="activeRow === i + 10 ? 'active' : ''"
             :key="row.id">
             <td class="name">
               <img :src="getPrefixImg(row.type)">
@@ -215,7 +215,7 @@ export default class Home extends Vue {
               {{row.owner}}
             </td>
             <td class="more">
-              <button @click.stop="setSelectList($event, i)">
+              <button @click.stop="setSelectList($event, i + 10)">
                 <img src="../assets/more-info.svg"
                   alt="">
               </button>
