@@ -8,9 +8,9 @@
 
 就某種方面來說，typescript好用，至少可以將自己一些interface拆分出來做，最後import同樣的spec也不用怕跑掉
 
-不過支援程度還是不足，希望之後composition api好一點吧...
+這次嘗試storybook協助component的開發
 
-這次新增了storybook協助component的開發
+然後關於檔案處理的部分，已經沒有啥心思做了...
 
 ## Project setup
 ```
