@@ -192,7 +192,7 @@ export default class Home extends Vue {
         </thead>
         <tbody @click.stop>
           <tr v-for="(row, i) in mockData"
-            @contextmenu.prevent="setSelectList($event, i)"
+            @contextmenu.prevent="setSelectList($event, i + 10)"
             @click.stop="clearSelectList"
             v-show="type === 'favorite' ? row.star : true"
             :class="activeRow === i + 10 ? 'active' : ''"
